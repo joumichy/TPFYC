@@ -2,15 +2,20 @@
     this is a simple test file
 '''
 import sys
-sys.path.append('model')
-sys.path.append('utils')
+import os
+module_path = os.path.abspath(os.path.join('..'))
 
-from utils_SH import *
+#sys.path.append(module_path+'\\model')
+#sys.path.append(module_path+'\\utils')
+
+
+from utils.utils_SH import *
 
 # other modules
 import os
 import numpy as np
-
+import matplotlib.pyplot as plt
+import matplotlib.image as mtpimg
 from torch.autograd import Variable
 from torchvision.utils import make_grid
 import torch
@@ -36,7 +41,7 @@ normal = np.reshape(normal, (-1, 3))
 modelFolder = 'trained_model/'
 
 # load model
-from defineHourglass_512_gray_skip import *
+from model.defineHourglass_512_gray_skip import *
 my_network = HourglassNet()
 my_network.load_state_dict(torch.load(os.path.join(modelFolder, 'trained_model_03.t7')))
 my_network.cuda()
@@ -49,6 +54,13 @@ if not os.path.exists(saveFolder):
     os.makedirs(saveFolder)
 
 img = cv2.imread('data/obama.jpg')
+#ADDED===============
+#cv2.imshow('image',img)
+#cv2.waitKey(0)
+#plt.imshow("Image",img)
+cv2.waitKey(0)
+#plt.show()
+#===================
 row, col, _ = img.shape
 img = cv2.resize(img, (512, 512))
 Lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
@@ -59,7 +71,9 @@ inputL = inputL.transpose((0,1))
 inputL = inputL[None,None,...]
 inputL = Variable(torch.from_numpy(inputL).cuda())
 
-for i in range(7):
+#Range : 7
+RANGE = 3
+for i in range(RANGE):
     sh = np.loadtxt(os.path.join(lightFolder, 'rotate_light_{:02d}.txt'.format(i)))
     sh = sh[0:9]
     sh = sh * 0.7
@@ -68,13 +82,16 @@ for i in range(7):
     # rendering half-sphere
     sh = np.squeeze(sh)
     shading = get_shading(normal, sh)
+
     value = np.percentile(shading, 95)
     ind = shading > value
     shading[ind] = value
     shading = (shading - np.min(shading))/(np.max(shading) - np.min(shading))
     shading = (shading *255.0).astype(np.uint8)
+    #print(shading)
     shading = np.reshape(shading, (256, 256))
     shading = shading * valid
+
     cv2.imwrite(os.path.join(saveFolder, \
             'light_{:02d}.png'.format(i)), shading)
     #--------------------------------------------------

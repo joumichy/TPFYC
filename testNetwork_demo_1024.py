@@ -5,7 +5,7 @@ import sys
 sys.path.append('model')
 sys.path.append('utils')
 
-from utils_SH import *
+from utils.utils_SH import *
 
 # other modules
 import os
@@ -36,7 +36,7 @@ normal = np.reshape(normal, (-1, 3))
 modelFolder = 'trained_model/'
 
 # load model
-from defineHourglass_1024_gray_skip_matchFeature import *
+from model.defineHourglass_1024_gray_skip_matchFeature import *
 my_network_512 = HourglassNet(16)
 my_network = HourglassNet_1024(my_network_512, 16)
 my_network.load_state_dict(torch.load(os.path.join(modelFolder, 'trained_model_1024_03.t7')))

@@ -7,7 +7,7 @@ def SH_basis(normal):
         get SH basis based on normal
         normal is a Nx3 matrix
         return a Nx9 matrix
-        The order of SH here is:
+        The order of SH hergee is:
         1, Y, Z, X, YX, YZ, 3Z^2-1, XZ, X^2-y^2
     '''
     numElem = normal.shape[0]
